@@ -127,8 +127,6 @@ function is_hacked_requirements($phase) {
       break;
   }
 
-  is_hacked_hacked();
-
   return $requirements;
 }
 
