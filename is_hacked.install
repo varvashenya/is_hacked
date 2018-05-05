@@ -143,6 +143,8 @@ function _is_hacked_is_php_safe_mode() {
 }
 
 /**
+ * Helper function. Checks if docroot is writable.
+ *
  * @return bool
  *
  *   TRUE if docroot is writable, FALSE otherwise.
@@ -152,6 +154,8 @@ function _is_hacked_is_docroot_writable() {
 }
 
 /**
+ * Helper function. Check is VCS command line is installed.
+ *
  * @return bool
  *   TRUE if vcs command line tool is installed, FALSE otherwise.
  */
