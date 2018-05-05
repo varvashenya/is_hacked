@@ -3,14 +3,11 @@
 /**
  * @file
  * Install, update and uninstall functions for the is_hacked module.
+ *
+ * @todo: get rid of helper functions below in favour of OOP.
  */
 
-/**
- * Implements hook_uninstall().
- */
-function is_hacked_uninstall() {
-  variable_del('is_hacked_vcs');
-}
+use Drupal\Core\Url;
 
 /**
  * Implements hook_requirements().
@@ -26,20 +23,18 @@ function is_hacked_requirements($phase) {
 
   switch ($phase) {
     case 'install':
-      $t = get_t();
-
       if (_is_hacked_is_php_safe_mode() && !_is_hacked_is_vcs_installed()) {
         $requirements['is_hacked_php_safe_mode'] = [
-          'title' => $t('Is Hacked'),
-          'description' => $t('The PHP safe mode enabled.'),
+          'title' => t('Is Hacked'),
+          'description' => t('The PHP safe mode enabled.'),
           'severity' => REQUIREMENT_ERROR,
         ];
       }
 
       if (!_is_hacked_is_vcs_installed()) {
         $requirements['is_hacked_vcs'] = [
-          'title' => $t('Is Hacked'),
-          'description' => $t('The vcs command is not installed or a repository is not initialized.'),
+          'title' => t('Is Hacked'),
+          'description' => t('The vcs command is not installed or a repository is not initialized.'),
           'severity' => REQUIREMENT_ERROR,
         ];
       }
@@ -101,20 +96,11 @@ function is_hacked_requirements($phase) {
       }
 
       if (is_hacked_hacked()) {
-        if (user_access('administer site configuration')) {
-          $requirements['is_hacked_hacked'] = [
-            'title' => t('Is Hacked'),
-            'description' => t('There are changes detected in the site repository. Check <a href="!url">report</a> for details.', ['!url' => url('admin/reports/is-hacked')]),
-            'severity' => REQUIREMENT_ERROR,
-          ];
-        }
-        else {
-          $requirements['is_hacked_hacked'] = [
-            'title' => t('Is Hacked'),
-            'description' => t('There are changes detected in the site repository.'),
-            'severity' => REQUIREMENT_ERROR,
-          ];
-        }
+        $requirements['is_hacked_hacked'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('There are changes detected in the site repository. Check <a href=":url">report</a> for details.', [':url' => Url::fromRoute('is_hacked.status')->toString()]),
+          'severity' => REQUIREMENT_ERROR,
+        ];
       }
       else {
         $requirements['is_hacked_hacked'] = [
@@ -126,8 +112,6 @@ function is_hacked_requirements($phase) {
 
       break;
   }
-
-  is_hacked_hacked();
 
   return $requirements;
 }
@@ -163,6 +147,8 @@ function _is_hacked_is_vcs_installed() {
   $output = [];
   $return_code = 0;
   module_load_include('module', 'is_hacked');
+
   exec(is_hacked_get_vcs_command(), $output, $return_code);
+
   return $return_code === 0;
 }

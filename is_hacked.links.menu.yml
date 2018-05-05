@@ -1,0 +1,10 @@
+is_hacked.status:
+  title: Is Hacked report
+  description: 'Is my site hacked?'
+  route_name: is_hacked.status
+  parent: system.admin_reports
+is_hacked.setting:
+  title: Is Hacked
+  description: 'Configure Is Hacked module.'
+  route_name: is_hacked.settings
+  parent: system.admin_config_development

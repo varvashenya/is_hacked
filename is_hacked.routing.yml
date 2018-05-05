@@ -1,0 +1,20 @@
+is_hacked.settings:
+  path: '/admin/config/development/is_hacked'
+  defaults:
+    _form: '\Drupal\is_hacked\Form\isHackedSettings'
+    _title: 'Is Hacked'
+  requirements:
+    _permission: 'administer site configuration'
+  # Warning: this page allows execution of shell commands.
+  options:
+    _admin_route: TRUE
+
+is_hacked.status:
+  path: '/admin/reports/is_hacked'
+  defaults:
+    _controller: '\Drupal\is_hacked\Controller\isHackedController::statusPage'
+    _title: 'Is Hacked'
+  requirements:
+    _permission: 'access site reports'
+  options:
+    no_cache: TRUE

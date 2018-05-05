@@ -3,6 +3,8 @@
 /**
  * @file
  * Checks if your site was hacked.
+ *
+ * @todo: get rid of functions below in favour of OOP.
  */
 
 /**
@@ -30,48 +32,11 @@ function is_hacked_get_report() {
 }
 
 /**
- * Implements hook_menu().
- */
-function is_hacked_menu() {
-  return [
-    'admin/reports/is-hacked' => [
-      'title' => 'Is hacked',
-      'description' => 'Checks if your site was hacked.',
-      'page callback' => 'is_hacked_page_callback',
-      'access arguments' => ['administer site configuration'],
-    ],
-  ];
-}
-
-/**
  * Get vcs command.
  *
  * @return string
  *   VCS command to check the site repository status.
  */
 function is_hacked_get_vcs_command() {
-  return variable_get('is_hacked_vcs', 'git status --short');
-}
-
-/**
- * Page callback for the is_hacked report.
- *
- * @return string
- *   Rendered HTML.
- *
- * @see is_hacked_menu()
- */
-function is_hacked_page_callback() {
-  $status = [
-    'caption' => t('Output of "@command"', ['@command' => is_hacked_get_vcs_command()]),
-    'header' => [t('Status'), t('File')],
-    'rows' => [],
-  ];
-
-  foreach (is_hacked_get_report() as $item) {
-    $item = check_plain(trim($item));
-    $status['rows'][] = explode(' ', $item, 2);
-  }
-
-  return theme('table', $status);
+  return \Drupal::config('is_hacked.settings')->get('vcs');
 }
