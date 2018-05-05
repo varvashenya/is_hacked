@@ -1,0 +1,164 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the is_hacked module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function is_hacked_uninstall() {
+  variable_del('is_hacked_vcs');
+}
+
+/**
+ * Implements hook_requirements().
+ *
+ * @param string $phase
+ *   The phase in which requirements are checked.
+ *
+ * @return array
+ *   An associative array of requirements.
+ */
+function is_hacked_requirements($phase) {
+  $requirements = [];
+
+  switch ($phase) {
+    case 'install':
+      $t = get_t();
+
+      if (_is_hacked_is_php_safe_mode() && !_is_hacked_is_vcs_installed()) {
+        $requirements['is_hacked_php_safe_mode'] = [
+          'title' => $t('Is Hacked'),
+          'description' => $t('The PHP safe mode enabled.'),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+
+      if (!_is_hacked_is_vcs_installed()) {
+        $requirements['is_hacked_vcs'] = [
+          'title' => $t('Is Hacked'),
+          'description' => $t('The vcs command is not installed or a repository is not initialized.'),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+      break;
+
+    case 'runtime':
+      if (!_is_hacked_is_docroot_writable()) {
+        $requirements['is_hacked_docroot'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('The docroot is not writable.'),
+          'severity' => REQUIREMENT_INFO,
+        ];
+      }
+      else {
+        $requirements['is_hacked_docroot'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('The docroot is writable.'),
+          'severity' => REQUIREMENT_INFO,
+        ];
+      }
+
+      if (_is_hacked_is_php_safe_mode()) {
+        if (_is_hacked_is_vcs_installed()) {
+          $requirements['is_hacked_php_safe_mode'] = [
+            'title' => t('Is Hacked'),
+            'description' => t('The PHP safe mode enabled, but it does not prevent vcs command execution.'),
+            'severity' => REQUIREMENT_INFO,
+          ];
+        }
+        else {
+          $requirements['is_hacked_php_safe_mode'] = [
+            'title' => t('Is Hacked'),
+            'description' => t('The PHP safe mode enabled.'),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+      }
+      else {
+        $requirements['is_hacked_php_safe_mode'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('The PHP safe mode disabled.'),
+          'severity' => REQUIREMENT_INFO,
+        ];
+      }
+
+      if (!_is_hacked_is_vcs_installed()) {
+        $requirements['is_hacked_vcs'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('The vcs command line tool is not installed or site repository is not initialized.'),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+      else {
+        $requirements['is_hacked_vcs'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('The vcs command line tool is installed and site repository is initialized.'),
+          'severity' => REQUIREMENT_OK,
+        ];
+      }
+
+      if (is_hacked_hacked()) {
+        if (user_access('administer site configuration')) {
+          $requirements['is_hacked_hacked'] = [
+            'title' => t('Is Hacked'),
+            'description' => t('There are changes detected in the site repository. Check <a href="!url">report</a> for details.', ['!url' => url('admin/reports/is-hacked')]),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+        else {
+          $requirements['is_hacked_hacked'] = [
+            'title' => t('Is Hacked'),
+            'description' => t('There are changes detected in the site repository.'),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+      }
+      else {
+        $requirements['is_hacked_hacked'] = [
+          'title' => t('Is Hacked'),
+          'description' => t('No changes in the site repository detected.'),
+          'severity' => REQUIREMENT_OK,
+        ];
+      }
+
+      break;
+  }
+
+  is_hacked_hacked();
+
+  return $requirements;
+}
+
+/**
+ * Helper function to check if PHP safe mode enabled.
+ *
+ * @return bool
+ *   TRUE if PHP safe mode enabled, FALSE otherwise.
+ */
+function _is_hacked_is_php_safe_mode() {
+  return (bool) ini_get('safe_mode');
+}
+
+/**
+ * @return bool
+ *
+ *   TRUE if docroot is writable, FALSE otherwise.
+ */
+function _is_hacked_is_docroot_writable() {
+  return is_writable(DRUPAL_ROOT);
+}
+
+/**
+ * @return bool
+ *   TRUE if vcs command line tool is installed, FALSE otherwise.
+ */
+function _is_hacked_is_vcs_installed() {
+  $output = [];
+  $return_code = 0;
+  module_load_include('module', 'is_hacked');
+  exec(is_hacked_get_vcs_command(), $output, $return_code);
+  return $return_code === 0;
+}

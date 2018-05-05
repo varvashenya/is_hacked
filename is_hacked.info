@@ -1,0 +1,5 @@
+name = Is Hacked
+description = Checks if your site was hacked.
+version = VERSION
+core = 7.x
+configure = admin/reports/is-hacked
