@@ -1,0 +1,19 @@
+{
+  "name": "drupal/is_hacked",
+  "description": "Checks if your site was hacked.",
+  "type": "drupal-module",
+  "homepage": "https://drupal.org/project/is_hacked",
+  "authors": [
+    {
+      "name": "Dmitrii Vartvashenia",
+      "homepage": "https://www.drupal.org/u/dmitrii",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://drupal.org/project/issues/is_hacked",
+    "source": "https://cgit.drupalcode.org/is_hacked"
+  },
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev"
+}
