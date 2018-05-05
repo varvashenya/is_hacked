@@ -1,0 +1,6 @@
+name: Is Hacked
+description: Checks if your site was hacked.
+package: Security
+type: module
+core: 8.x
+configure: is_hacked.settings
