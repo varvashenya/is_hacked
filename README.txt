@@ -3,4 +3,4 @@ The module makes sense only if you have vcs command line tool installed on a ser
 configured to allow a vcs command execution.
 Be safe!
 
-By default it works with git. Change the is_hacked_vcs variable to make it working with other vcs.
+By default it works with git. Change the is_hacked.settings.vcs config value to make it working with other vcs.
